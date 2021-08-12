@@ -23,6 +23,13 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.naive_bayes import MultinomialNB
 
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import LinearSVC
+from sklearn.model_selection import cross_val_score
+from sklearn.metrics import confusion_matrix
+from sklearn import metrics
+
 # Reading data into colab env from local drive
 from google.colab import files
 uploaded = files.upload()
@@ -113,14 +120,10 @@ print(clf.predict(count_vect.transform([test_document])))
 
 # Model Selection
 # trying Logistic Regression,(Multinomial) Naive Bayes,Linear Support Vector Machine,Random Forest
-# calculating the accuracies using cross_val_score
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import LinearSVC
-from sklearn.model_selection import cross_val_score
+# calculating the accuracies using cross_val_score with default hyperparams
 
 models = [
-    RandomForestClassifier(n_estimators=200, max_depth=3, random_state=0),
+    RandomForestClassifier(),
     LinearSVC(),
     MultinomialNB(),
     LogisticRegression(random_state=0),
@@ -141,7 +144,10 @@ sns.stripplot(x='model_name', y='accuracy', data=cv_df,
               size=8, jitter=True, edgecolor="gray", linewidth=4)
 cv_df.groupby('model_name').accuracy.mean()
 
-# try out explicit validation using hyperparameter tuning
+# try out explicit validation using hyperparameter 
+# Random Forest
+
+# LinearSVC
 
 
 # LinearSVC has highest accuracy.plotting confusion matrix 
@@ -149,7 +155,6 @@ model = LinearSVC()
 X_train, X_test, y_train, y_test, indices_train, indices_test = train_test_split(features, labels, df.index, test_size=0.33, random_state=0)
 model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
-from sklearn.metrics import confusion_matrix
 conf_mat = confusion_matrix(y_test, y_pred)
 fig, ax = plt.subplots(figsize=(10, 8))
 sns.heatmap(conf_mat, annot=True, fmt='d',
@@ -159,7 +164,6 @@ plt.xlabel('Predicted')
 plt.show()
 
 # plotting classification report of it.
-from sklearn import metrics
 print(metrics.classification_report(y_test, y_pred, target_names=df['categories'].unique()))
 
 
