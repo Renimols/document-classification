@@ -86,8 +86,8 @@ sns.boxplot(data=df_95, x='categories', y='document_length', width=.5);
 
 # Feature Engineering
 tfidf = TfidfVectorizer(sublinear_tf=True, min_df=5, norm='l2', encoding='latin-1', ngram_range=(1, 2), stop_words='english')
-features = tfidf.fit_transform(df.documents).toarray()
-labels = df.category_id
+features = tfidf.fit_transform(df_95.documents).toarray()
+labels = df_95.category_id
 features.shape
 
 # using sklearn.feature_selection.chi2 to find the terms(unigrams) that are the most correlated with each of the products:
@@ -165,7 +165,7 @@ for model in models:
   plt.show()
 
   # plotting classification report of the model.
-  print(metrics.classification_report(y_test, y_pred, target_names=df['categories'].unique()))
+  print(metrics.classification_report(y_test, y_pred, target_names=df_95['categories'].unique()))
 
 
 
