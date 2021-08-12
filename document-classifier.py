@@ -29,6 +29,7 @@ from sklearn.svm import LinearSVC
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import confusion_matrix
 from sklearn import metrics
+from sklearn.model_selection import RandomizedSearchCV
 
 # Reading data into colab env from local drive
 from google.colab import files
@@ -106,18 +107,6 @@ for categories, category_id in sorted(category_to_id.items()):
   plt.axis("off")
   plt.show()
 
-
-# Data Modelling using Naive Bayes Classifier
-X_train, X_test, y_train, y_test = train_test_split(df['documents'], df['categories'], random_state = 0)
-count_vect = CountVectorizer()
-X_train_counts = count_vect.fit_transform(X_train)
-tfidf_transformer = TfidfTransformer()
-X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
-clf = MultinomialNB().fit(X_train_tfidf, y_train)
-
-test_document = "Yukos unit buyer faces loan claim The owners of embattled Russian oil giant Yukos are to ask the buyer of its former production unit to pay back a $900m (£479m) loan.State-owned Rosneft bought the Yugansk unit for $9.3bn in a sale forced by Russia to part settle a $27.5bn tax claim against Yukos. Yukos' owner Menatep Group says it will ask Rosneft to repay a loan that Yugansk had secured on its assets. Rosneft already faces a similar $540m repayment demand from foreign banks. Legal experts said Rosneft's purchase of Yugansk would include such obligations. The pledged assets are with Rosneft, so it will have to pay real money to the creditors to avoid seizure of Yugansk assets,said Moscow-based US lawyer Jamie Firestone, who is not connected to the case. Menatep Group's managing director Tim Osborne told the Reuters news agency: If they default, we will fight them where the rule of law exists under the international arbitration clauses of the credit.Rosneft officials were unavailable for comment. But the company has said it intends to take action against Menatep to recover some of the tax claims and debts owed by Yugansk. Yukos had filed for bankruptcy protection in a US court in an attempt to prevent the forced sale of its main production arm. The sale went ahead in December and Yugansk was sold to a little-known shell company which in turn was bought by Rosneft. Yukos claims its downfall was punishment for the political ambitions of its founder Mikhail Khodorkovsky and has vowed to sue any participant in the sale."
-print(clf.predict(count_vect.transform([test_document])))
-
 # Model Selection
 # trying Logistic Regression,(Multinomial) Naive Bayes,Linear Support Vector Machine,Random Forest
 # calculating the accuracies using cross_val_score with default hyperparams
@@ -144,11 +133,19 @@ sns.stripplot(x='model_name', y='accuracy', data=cv_df,
               size=8, jitter=True, edgecolor="gray", linewidth=4)
 cv_df.groupby('model_name').accuracy.mean()
 
-# try out explicit validation using hyperparameter 
-# Random Forest
+# try out explicit validation using RandomizedSearchCV 
 
 # LinearSVC
+penalty = ['l2']
+c_values = [100, 10, 1.0, 0.1, 0.01]
+# define grid param_distributions
+grid = dict(penalty=penalty,C=c_values)
+lscv = LinearSVC()
+rf_random = RandomizedSearchCV(estimator = lsvc, param_distributions = grid, n_iter = 100, cv = 3, verbose=2, random_state=42, n_jobs = -1)
+rf_random.fit(features, labels)
+rf_random.best_params_
 
+# re-run the model with best hyper parameters.but default values were the best
 
 # LinearSVC has highest accuracy.plotting confusion matrix 
 model = LinearSVC()

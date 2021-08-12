@@ -24,3 +24,7 @@ LinearSVC                 0.983434
 LogisticRegression        0.982960
 MultinomialNB             0.971605
 RandomForestClassifier    0.961195
+
+with best hyperparams
+
+LinearSVC                 0.983432
