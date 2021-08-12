@@ -143,7 +143,7 @@ penalty = ['l2']
 c_values = [100, 10, 1.0, 0.1, 0.01]
 # define grid param_distributions
 grid = dict(penalty=penalty,C=c_values)
-lscv = LinearSVC()
+lsvc = LinearSVC()
 rf_random = RandomizedSearchCV(estimator = lsvc, param_distributions = grid, n_iter = 100, cv = 3, verbose=2, random_state=42, n_jobs = -1)
 rf_random.fit(X_train, y_train)
 rf_random.best_params_
