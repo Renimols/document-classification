@@ -111,6 +111,9 @@ for categories, category_id in sorted(category_to_id.items()):
 # trying Logistic Regression,(Multinomial) Naive Bayes,Linear Support Vector Machine,Random Forest
 # calculating the accuracies using cross_val_score with default hyperparams
 
+# split input data into training data and test data
+
+X_train, X_test, y_train, y_test= train_test_split(features, labels,random_state=0)
 models = [
     RandomForestClassifier(),
     LinearSVC(),
@@ -122,7 +125,7 @@ cv_df = pd.DataFrame(index=range(CV * len(models)))
 entries = []
 for model in models:
   model_name = model.__class__.__name__
-  accuracies = cross_val_score(model, features, labels, scoring='accuracy', cv=CV)
+  accuracies = cross_val_score(model, X_train, y_train, scoring='accuracy', cv=CV)
   for fold_idx, accuracy in enumerate(accuracies):
     entries.append((model_name, fold_idx, accuracy))
 cv_df = pd.DataFrame(entries, columns=['model_name', 'fold_idx', 'accuracy'])
@@ -142,26 +145,27 @@ c_values = [100, 10, 1.0, 0.1, 0.01]
 grid = dict(penalty=penalty,C=c_values)
 lscv = LinearSVC()
 rf_random = RandomizedSearchCV(estimator = lsvc, param_distributions = grid, n_iter = 100, cv = 3, verbose=2, random_state=42, n_jobs = -1)
-rf_random.fit(features, labels)
+rf_random.fit(X_train, y_train)
 rf_random.best_params_
 
-# re-run the model with best hyper parameters.but default values were the best
+# calculated the cross_val_score of model with best hyper parameters.
+# but default values were the best
 
-# LinearSVC has highest accuracy.plotting confusion matrix 
-model = LinearSVC()
-X_train, X_test, y_train, y_test, indices_train, indices_test = train_test_split(features, labels, df.index, test_size=0.33, random_state=0)
-model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
-conf_mat = confusion_matrix(y_test, y_pred)
-fig, ax = plt.subplots(figsize=(10, 8))
-sns.heatmap(conf_mat, annot=True, fmt='d',
-            xticklabels=category_id_df.categories.values, yticklabels=category_id_df.categories.values)
-plt.ylabel('Actual')
-plt.xlabel('Predicted')
-plt.show()
+for model in models:
 
-# plotting classification report of it.
-print(metrics.classification_report(y_test, y_pred, target_names=df['categories'].unique()))
+  model.fit(X_train, y_train)
+  y_pred = model.predict(X_test)
+  # plotting confusion matrix 
+  conf_mat = confusion_matrix(y_test, y_pred)
+  fig, ax = plt.subplots(figsize=(10, 8))
+  sns.heatmap(conf_mat, annot=True, fmt='d',
+              xticklabels=category_id_df.categories.values, yticklabels=category_id_df.categories.values)
+  plt.ylabel('Actual')
+  plt.xlabel('Predicted')
+  plt.show()
+
+  # plotting classification report of the model.
+  print(metrics.classification_report(y_test, y_pred, target_names=df['categories'].unique()))
 
 
 
