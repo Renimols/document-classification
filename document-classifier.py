@@ -45,19 +45,6 @@ category_id_df = df[['categories', 'category_id']].drop_duplicates().sort_values
 category_to_id = dict(category_id_df.values)
 id_to_category = dict(category_id_df[['category_id', 'categories']].values)
 
-# Preprocessing text
-lemmatizer = WordNetLemmatizer()
-for i in range(0, len(df)):
-    document = re.sub('[^a-zA-Z]', ' ', df['documents'][i])
-    document = document.lower()
-    document = document.split()
-    
-    document = [lemmatizer.lemmatize(word) for word in document if not word in stopwords.words('english')]
-    document = ' '.join(document)
-    df.documents[i] = document
-  
-df.head()
-
 # Exploratory Data Analaysis
 # plotting categories vs document-count:
 fig = plt.figure(figsize=(8,6))
@@ -83,6 +70,22 @@ sns.distplot(df_95['document_length']).set_title('Document length distribution')
 # box plot after removing outliers:
 plt.figure(figsize=(12.8,6))
 sns.boxplot(data=df_95, x='categories', y='document_length', width=.5);
+
+# Preprocessing text
+lemmatizer = WordNetLemmatizer()
+# corpus = []
+for i in range(0, len(df_95)):
+    document = re.sub('[^a-zA-Z]', ' ', df_95['documents'][i])
+    document = document.lower()
+    document = document.split()
+    
+    document = [lemmatizer.lemmatize(word) for word in document if not word in stopwords.words('english')]
+    document = ' '.join(document)
+    df_95.documents[i] = document
+    # corpus.append(document)
+
+  
+df_95.head()
 
 # Feature Engineering
 tfidf = TfidfVectorizer(sublinear_tf=True, min_df=5, norm='l2', encoding='latin-1', ngram_range=(1, 2), stop_words='english')
