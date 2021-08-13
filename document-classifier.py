@@ -170,11 +170,13 @@ for model in models:
 
 # observed LinearSVC() has highest performance with test data set
 # building the model and test with sample input
+# {0: 'entertainment', 1: 'tech', 2: 'business', 3: 'politics', 4: 'sport'}
 from google.colab import files
 uploaded = files.upload()
-input = uploaded['test.txt'].decode("utf-8")
+input = uploaded['sample.txt'].decode("utf-8").split("\r\n")
 classifier = LinearSVC().fit(X_train, y_train)
-result = classifier.predict(features = tfidf.fit_transform([""]).toarray())
+category_id = classifier.predict(tfidf.transform(input))[0]
+print("This document belongs to Category-",id_to_category[category_id])
 
 
 
