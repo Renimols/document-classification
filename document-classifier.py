@@ -143,7 +143,7 @@ sns.stripplot(x='model_name', y='accuracy', data=cv_df,
               size=8, jitter=True, edgecolor="gray", linewidth=4)
 cv_df.groupby('model_name').accuracy.mean()
 
-# try out explicit validation using RandomizedSearchCV
+# finding best hyperparameters using RandomizedSearchCV
 
 penalty = ['l2', 'l1']
 c_values = [100, 10, 1.0, 0.1, 0.01]
@@ -177,10 +177,14 @@ for model in models:
           target_names=df_95['categories'].unique()))
 
 # observed LinearSVC() has highest performance with test data set also.
-# building the selected model and test with sample input
+
+# calculated accuracy of LinearSVC() with rf_random.best_params_. this was best best accuracy
+
+# building the selected model using best hyperparameters and test with sample input
 # {0: 'entertainment', 1: 'tech', 2: 'business', 3: 'politics', 4: 'sport'}
 uploaded = files.upload()
 input = uploaded['sample.txt'].decode("utf-8").split("\r\n")
-classifier = LinearSVC().fit(X_train, y_train)
+classifier = LinearSVC(C=100).fit(X_train, y_train)
+# preprocess input
 category_id = classifier.predict(tfidf.transform(input))[0]
 print("This document belongs to Category-", id_to_category[category_id])
