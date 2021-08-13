@@ -148,9 +148,11 @@ rf_random = RandomizedSearchCV(estimator = lsvc, param_distributions = grid, n_i
 rf_random.fit(X_train, y_train)
 rf_random.best_params_
 
-# calculated the cross_val_score of model with best hyper parameters.
+# calculated the accuracy mean of cross_val_score with best hyper parameters.
 # but default values were the best
 
+# even though LinearSVC() has the highest cross_val_score,
+# accuracy with test data is calculated for all models.
 for model in models:
 
   model.fit(X_train, y_train)
@@ -167,9 +169,8 @@ for model in models:
   # plotting classification report of the model.
   print(metrics.classification_report(y_test, y_pred, target_names=df_95['categories'].unique()))
 
-
-# observed LinearSVC() has highest performance with test data set
-# building the model and test with sample input
+# observed LinearSVC() has highest performance with test data set also.
+# building the selected model and test with sample input
 # {0: 'entertainment', 1: 'tech', 2: 'business', 3: 'politics', 4: 'sport'}
 from google.colab import files
 uploaded = files.upload()
