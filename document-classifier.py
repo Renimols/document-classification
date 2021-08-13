@@ -118,7 +118,7 @@ models = [
     RandomForestClassifier(),
     LinearSVC(),
     MultinomialNB(),
-    LogisticRegression(random_state=0),
+    LogisticRegression(),
 ]
 CV = 5
 cv_df = pd.DataFrame(index=range(CV * len(models)))
@@ -152,7 +152,7 @@ rf_random.best_params_
 # but default values were the best
 
 # even though LinearSVC() has the highest cross_val_score,
-# accuracy with test data is calculated for all models.
+# training set accuracy and test set accuracy is calculated for all models.
 for model in models:
 
   model.fit(X_train, y_train)
@@ -165,7 +165,6 @@ for model in models:
   plt.ylabel('Actual')
   plt.xlabel('Predicted')
   plt.show()
-
   # plotting classification report of the model.
   print(metrics.classification_report(y_test, y_pred, target_names=df_95['categories'].unique()))
 
