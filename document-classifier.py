@@ -168,10 +168,13 @@ for model in models:
   print(metrics.classification_report(y_test, y_pred, target_names=df_95['categories'].unique()))
 
 
-
-
-
-
+# observed LinearSVC() has highest performance with test data set
+# building the model and test with sample input
+from google.colab import files
+uploaded = files.upload()
+input = uploaded['test.txt'].decode("utf-8")
+classifier = LinearSVC().fit(X_train, y_train)
+result = classifier.predict(features = tfidf.fit_transform([""]).toarray())
 
 
 

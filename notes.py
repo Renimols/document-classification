@@ -9,6 +9,8 @@ tfidf_transformer = TfidfTransformer()
 X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
 clf = MultinomialNB().fit(X_train_tfidf, y_train)
 
+print(clf.predict(count_vect.transform([" I do not believe this debt is mine."])))
+
 # RandomizedSearchCV for RF
 random_grid = {'bootstrap': [True, False],
  'max_depth': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, None],
