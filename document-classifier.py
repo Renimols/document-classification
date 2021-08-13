@@ -81,6 +81,7 @@ sns.boxplot(data=df_95, x='categories', y='document_length', width=.5)
 
 # Preprocessing text
 
+df_95=df_95.reset_index() 
 lemmatizer = WordNetLemmatizer()
 for i in range(0, len(df_95)):
     document = re.sub('[^a-zA-Z]', ' ', df_95['documents'][i])
@@ -172,7 +173,6 @@ rf_random.best_params_
 
 models.append(LinearSVC(C=100))
 for model in models:
-
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     # plotting confusion matrix
