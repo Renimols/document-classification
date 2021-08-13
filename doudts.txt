@@ -1,8 +1,0 @@
-
-% of article
-
-why model ?
-false predictions overlap? intersection of datapoints
-code formattig
-why randomized search?
-test input ,preprocessing

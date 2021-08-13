@@ -1,4 +1,5 @@
 # The code below is executed in Google Colab for doing classification.
+# Each process could be executed in different blocks for better clarity
 
 from wordcloud import WordCloud, STOPWORDS
 from google.colab import files
@@ -31,12 +32,14 @@ nltk.download('wordnet')
 
 
 # Reading data into colab env from local drive
+
 uploaded = files.upload()
 df = pd.read_csv(io.BytesIO(uploaded['test_data.csv']))
 df.shape
 
 # assigning numerical values to categories to feed into the model.
 # introduced a new column named category_id
+
 df = df[pd.notnull(df['documents'])]
 df['category_id'] = df['categories'].factorize()[0]
 category_id_df = df[['categories', 'category_id']
@@ -46,20 +49,24 @@ id_to_category = dict(category_id_df[['category_id', 'categories']].values)
 
 # Exploratory Data Analaysis
 # plotting categories vs document-count:
+
 fig = plt.figure(figsize=(8, 6))
 sns.catplot(x='categories', data=df, kind='count')
 
 # plotting Document length distribution:
+
 df['document_length'] = df['documents'].str.len()
 fig = plt.figure(figsize=(8, 6))
 sns.distplot(df['document_length']).set_title('Document length distribution')
 df['document_length'].describe()
 
 #  box plot the df:
+
 plt.figure(figsize=(12.8, 6))
 sns.boxplot(data=df, x='categories', y='document_length', width=.5)
 
 #  remove from the 95% percentile onwards to better appreciate the histogram:
+
 quantile_95 = df['document_length'].quantile(0.95)
 print(quantile_95)
 df_95 = df[df['document_length'] < quantile_95]
@@ -68,12 +75,13 @@ sns.distplot(df_95['document_length']).set_title(
     'Document length distribution')
 
 # box plot after removing outliers:
+
 plt.figure(figsize=(12.8, 6))
 sns.boxplot(data=df_95, x='categories', y='document_length', width=.5)
 
 # Preprocessing text
+
 lemmatizer = WordNetLemmatizer()
-# corpus = []
 for i in range(0, len(df_95)):
     document = re.sub('[^a-zA-Z]', ' ', df_95['documents'][i])
     document = document.lower()
@@ -83,12 +91,11 @@ for i in range(0, len(df_95)):
         word) for word in document if not word in stopwords.words('english')]
     document = ' '.join(document)
     df_95.documents[i] = document
-    # corpus.append(document)
-
 
 df_95.head()
 
 # Feature Engineering
+
 tfidf = TfidfVectorizer(sublinear_tf=True, min_df=5, norm='l2',
                         encoding='latin-1', ngram_range=(1, 2), stop_words='english')
 features = tfidf.fit_transform(df_95.documents).toarray()
@@ -96,6 +103,7 @@ labels = df_95.category_id
 features.shape
 
 # using sklearn.feature_selection.chi2 to find the terms(unigrams) that are the most correlated with each of the products:
+
 N = 10
 for categories, category_id in sorted(category_to_id.items()):
     features_chi2 = chi2(features, labels == category_id)
@@ -137,7 +145,8 @@ for model in models:
         entries.append((model_name, fold_idx, accuracy))
 cv_df = pd.DataFrame(entries, columns=['model_name', 'fold_idx', 'accuracy'])
 
-# boxplotting the accuracies
+# boxplotting the accuracies:
+
 sns.boxplot(x='model_name', y='accuracy', data=cv_df)
 sns.stripplot(x='model_name', y='accuracy', data=cv_df,
               size=8, jitter=True, edgecolor="gray", linewidth=4)
@@ -160,6 +169,8 @@ rf_random.best_params_
 
 # even though LinearSVC() has the highest cross_val_score,
 # training set accuracy and test set accuracy is calculated for all models.
+
+models.append(LinearSVC(C=100))
 for model in models:
 
     model.fit(X_train, y_train)
@@ -177,14 +188,20 @@ for model in models:
           target_names=df_95['categories'].unique()))
 
 # observed LinearSVC() has highest performance with test data set also.
-
-# calculated accuracy of LinearSVC() with rf_random.best_params_. this was best best accuracy
-
+# LinearSVC() with rf_random.best_params_has the best accuracy
 # building the selected model using best hyperparameters and test with sample input
 # {0: 'entertainment', 1: 'tech', 2: 'business', 3: 'politics', 4: 'sport'}
+
 uploaded = files.upload()
 input = uploaded['sample.txt'].decode("utf-8").split("\r\n")
+preprocessed_input = []
+document = re.sub('[^a-zA-Z]', ' ', input[0])
+document = document.lower()
+document = document.split()
+document = [lemmatizer.lemmatize(
+    word) for word in document if not word in stopwords.words('english')]
+document = ' '.join(document)
+preprocessed_input.append(document)
 classifier = LinearSVC(C=100).fit(X_train, y_train)
-# preprocess input
-category_id = classifier.predict(tfidf.transform(input))[0]
+category_id = classifier.predict(tfidf.transform(preprocessed_input))[0]
 print("This document belongs to Category-", id_to_category[category_id])
