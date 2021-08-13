@@ -1,5 +1,5 @@
 # The code below is executed in Google Colab for doing classification.
-# The file reading mechanisms are implemented in similar fashion.
+
 import io
 import pandas as pd
 import nltk
