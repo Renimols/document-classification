@@ -7,4 +7,5 @@ This is achieved with a supervised machine learning classification model that is
 The project implementation is done in google colab.
 
 use dataset-builder.py for creating data set.
+
 use document-classifier.py for implementing classification.
