@@ -173,8 +173,10 @@ rf_random.best_params_
 
 models.append(LinearSVC(C=100))
 for model in models:
+    print(model)
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
+    y_pred_train = model.predict(X_train)
     # plotting confusion matrix
     conf_mat = confusion_matrix(y_test, y_pred)
     fig, ax = plt.subplots(figsize=(10, 8))
@@ -183,8 +185,11 @@ for model in models:
     plt.ylabel('Actual')
     plt.xlabel('Predicted')
     plt.show()
-    # plotting classification report of the model.
+    # plotting classification report of the model [test set accuracy].
     print(metrics.classification_report(y_test, y_pred,
+          target_names=df_95['categories'].unique()))
+    # plotting classification report of the model [traing set accuracy].
+    print(metrics.classification_report(y_train, y_pred_train,
           target_names=df_95['categories'].unique()))
 
 # observed LinearSVC() has highest performance with test data set also.
